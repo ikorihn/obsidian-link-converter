@@ -193,6 +193,9 @@ export const convertWikiLinksToMarkdown = async (md: string, sourceFile: TFile, 
     let wikiMatches = linkMatches.filter((match) => match.type === 'wiki');
     for (let wikiMatch of wikiMatches) {
         let mdLink = createLink('markdown', wikiMatch.linkText, wikiMatch.altOrBlockRef, sourceFile, plugin);
+        if (!mdLink) {
+            continue;
+        }
         newMdText = newMdText.replace(wikiMatch.match, mdLink);
     }
     // --> Convert Wiki Transclusion Links to Markdown Transclusion
@@ -266,6 +269,11 @@ const getFileLinkInFormat = (file: TFile, sourceFile: TFile, plugin: LinkConvert
 const createLink = (dest: LinkType, originalLink: string, altOrBlockRef: string, sourceFile: TFile, plugin: LinkConverterPlugin): string => {
     let finalLink = originalLink;
     let altText: string;
+
+    const matchFile = plugin.app.vault.getFiles().find(t => sourceFile.name !== t.name && (t.basename === finalLink || t.name === finalLink))
+    if (!matchFile) {
+        return '';
+    }
 
     let fileLink = decodeURI(finalLink);
     let file = plugin.app.metadataCache.getFirstLinkpathDest(fileLink, sourceFile.path);
