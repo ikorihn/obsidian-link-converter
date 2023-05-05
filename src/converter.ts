@@ -293,7 +293,9 @@ const createLink = (dest: LinkType, originalLink: string, altOrBlockRef: string,
         } else {
             altText = file ? file.basename : finalLink;
         }
-        return `[${altText}](${encodeURI(finalLink)}${fileExtension})`;
+        finalLink = finalLink.replace(/ /g, '%20')
+        const t = `[${altText}](${finalLink}${fileExtension})`;
+        return t;
     } else if (dest === 'wikiTransclusion') {
         return `[[${decodeURI(finalLink)}#${decodeURI(altOrBlockRef)}]]`;
     } else if (dest === 'mdTransclusion') {
@@ -305,7 +307,8 @@ const createLink = (dest: LinkType, originalLink: string, altOrBlockRef: string,
         } else {
             encodedBlockRef = encodeURI(encodedBlockRef);
         }
-        return `[](${encodeURI(finalLink)}${fileExtension}#${encodedBlockRef})`;
+        finalLink = finalLink.replace(/ /g, '%20')
+        return `[](${finalLink}${fileExtension}#${encodedBlockRef})`;
     }
 
     return '';
